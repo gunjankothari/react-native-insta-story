@@ -25,6 +25,8 @@ type Props = {
     duration?: number,
     onFinish?: function,
     onClosePress: function,
+    onNext: function,
+    onPrevious: function,
     key: number,
     swipeText?: string,
     customSwipeUpComponent?: any,
@@ -135,6 +137,7 @@ export const StoryListItem = (props: Props) => {
             setContent(data);
             setCurrent(current + 1);
             progress.setValue(0);
+            props?.onNext(content?.[current]);
         } else {
             // the next content is empty
             close('next');
@@ -150,6 +153,7 @@ export const StoryListItem = (props: Props) => {
             setContent(data);
             setCurrent(current - 1);
             progress.setValue(0);
+            props?.onPrevious(content?.[current]);
         } else {
             // the previous content is empty
             close('previous');

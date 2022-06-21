@@ -16,6 +16,8 @@ type Props = {
     pressedBorderColor?: string,
     onClose?: function,
     onStart?: function,
+    onStoryNext?: function,
+    onStoryPrevious?: function,
     duration?: number,
     swipeText?: string,
     customSwipeUpComponent?: any,
@@ -33,6 +35,8 @@ export const Story = (props: Props) => {
         style,
         onStart,
         onClose,
+        onStoryNext,
+        onStoryPrevious,
         duration,
         swipeText,
         customSwipeUpComponent,
@@ -116,6 +120,8 @@ export const Story = (props: Props) => {
                                stories={x.stories}
                                currentPage={currentPage}
                                onFinish={onStoryFinish}
+                               onNext={onStoryNext}
+                               onPrevious={onStoryPrevious}
                                swipeText={swipeText}
                                customSwipeUpComponent={customSwipeUpComponent}
                                customCloseComponent={customCloseComponent}
