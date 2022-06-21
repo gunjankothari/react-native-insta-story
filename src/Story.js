@@ -49,15 +49,17 @@ export const Story = (props: Props) => {
     const cube = useRef();
 
     // Component Functions
-    const _handleStoryItemPress = (item, index) => {
+    const _handleStoryItemPress = async (item, index) => {
+        let flag = true;
         const newData = dataState.slice(index);
         if (onStart) {
-            onStart(item)
+            flag = await onStart(item)
         }
-
-        setCurrentPage(0);
-        setSelectedData(newData);
-        setIsModalOpen(true);
+        if(flag) {
+            setCurrentPage(0);
+            setSelectedData(newData);
+            setIsModalOpen(true);
+        }
     };
 
     useEffect(() => {
