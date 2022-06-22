@@ -25,8 +25,8 @@ type Props = {
     duration?: number,
     onFinish?: function,
     onClosePress: function,
-    onNext: function,
-    onPrevious: function,
+    onNext?: function,
+    onPrevious?: function,
     key: number,
     swipeText?: string,
     customSwipeUpComponent?: any,
@@ -42,6 +42,7 @@ export const StoryListItem = (props: Props) => {
     const [content, setContent] = useState(
         stories.map((x) => {
             return {
+                ...x,
                 image: x.story_image,
                 onPress: x.onPress,
                 swipeText: x.swipeText,
@@ -112,10 +113,10 @@ export const StoryListItem = (props: Props) => {
 
     function onSwipeUp() {
         if (props.onClosePress) {
-            props.onClosePress();
+            props.onClosePress(stories[current]);
         }
         if (content[current].onPress) {
-            content[current].onPress();
+            content[current].onPress(stories[current]);
         }
     }
 
@@ -137,7 +138,7 @@ export const StoryListItem = (props: Props) => {
             setContent(data);
             setCurrent(current + 1);
             progress.setValue(0);
-            props?.onNext(content?.[current]);
+            props?.onNext && props?.onNext(content?.[current]);
         } else {
             // the next content is empty
             close('next');
@@ -153,7 +154,7 @@ export const StoryListItem = (props: Props) => {
             setContent(data);
             setCurrent(current - 1);
             progress.setValue(0);
-            props?.onPrevious(content?.[current]);
+            props?.onPrevious && props?.onPrevious(content?.[current]);
         } else {
             // the previous content is empty
             close('previous');
@@ -291,9 +292,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',
     },
     image: {
-        width: width,
-        height: height,
-        resizeMode: 'cover'
+        width: '100%',
+        display: 'flex',
+        aspectRatio: 1,
     },
     backgroundContainer: {
         position: 'absolute',
@@ -301,6 +302,10 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
+        display: 'flex',
+        flex: 1,
+        height,
+        justifyContent: 'center',
     },
     spinnerContainer: {
         zIndex: -100,
