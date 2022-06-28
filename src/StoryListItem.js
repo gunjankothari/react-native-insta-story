@@ -122,7 +122,6 @@ export const StoryListItem = (props: Props) => {
     }
 
     function onSwipeUp() {
-        debugger;
         if (props?.shouldCloseOnSwipeUp && props.onClosePress) {
             props.onClosePress(stories[current]);
         }

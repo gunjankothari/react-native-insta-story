@@ -34,7 +34,7 @@ const StoryCircleListItem = (props) => {
         setIsPressed(true);
     };
 
-    const size = avatarSize ?? 60;
+    const size = avatarSize ?? 70;
 
     return (
         <View style={styles.container}>
@@ -42,10 +42,7 @@ const StoryCircleListItem = (props) => {
                 onPress={() => _handleItemPress(item)}
                 style={[
                     styles.avatarWrapper,
-                    {
-                        height: size + 4,
-                        width: size + 4,
-                    },
+                   
                     !isPressed
                         ? {
                             borderColor: unPressedBorderColor
@@ -87,17 +84,19 @@ export default StoryCircleListItem;
 const styles = StyleSheet.create({
     container: {
         marginVertical: 5,
-        marginRight: 10
+        marginRight: 8,
+        marginLeft: 8
     },
     avatarWrapper: {
-        borderWidth: 2,
+        borderWidth: 3,
+        padding: 2,
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
         borderColor: 'red',
         borderRadius: 100,
-        height: 64,
-        width: 64
+        height: 80,
+        width: 80
     },
     text: {
         marginTop: 3,
