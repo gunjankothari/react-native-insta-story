@@ -24,7 +24,9 @@ type Props = {
     customCloseComponent?: any,
     avatarSize?: number,
     showAvatarText?: boolean,
-    avatarTextStyle?: TextStyle
+    avatarTextStyle?: TextStyle,
+    showBlurredBackground?: boolean,
+    shouldCloseOnSwipeUp?: boolean
 };
 
 export const Story = (props: Props) => {
@@ -43,7 +45,9 @@ export const Story = (props: Props) => {
         customCloseComponent,
         avatarSize,
         showAvatarText,
-        avatarTextStyle
+        avatarTextStyle,
+        showBlurredBackground,
+        shouldCloseOnSwipeUp = true
     } = props;
 
     const [dataState, setDataState] = useState(data);
@@ -125,6 +129,8 @@ export const Story = (props: Props) => {
                                swipeText={swipeText}
                                customSwipeUpComponent={customSwipeUpComponent}
                                customCloseComponent={customCloseComponent}
+                               showBlurredBackground={showBlurredBackground}
+                               shouldCloseOnSwipeUp={shouldCloseOnSwipeUp}
                                onClosePress={() => {
                                    setIsModalOpen(false);
                                    if (onClose) {

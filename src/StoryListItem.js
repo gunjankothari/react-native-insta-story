@@ -31,14 +31,18 @@ type Props = {
     swipeText?: string,
     customSwipeUpComponent?: any,
     customCloseComponent?: any,
-    stories: IUserStoryItem[]
+    stories: IUserStoryItem[],
+    showBlurredBackground?: boolean,
+    shouldCloseOnSwipeUp?: boolean
 };
+
 
 export const StoryListItem = (props: Props) => {
     const stories = props.stories;
 
     const [load, setLoad] = useState(true);
     const [pressed, setPressed] = useState(false);
+    const [currentImageHeight, setCurrentImageHeight] = useState(0);
     const [content, setContent] = useState(
         stories.map((x) => {
             return {
@@ -55,6 +59,12 @@ export const StoryListItem = (props: Props) => {
     const progress = useRef(new Animated.Value(0)).current;
 
     const prevCurrentPage = usePrevious(props.currentPage);
+
+    React.useEffect(() => {
+        Image.getSize(content[current].image, (width, height) => {
+            setCurrentImageHeight(height);        
+        });
+    }, [content, current])
 
     useEffect(() => {
         let isPrevious = prevCurrentPage > props.currentPage;
@@ -112,7 +122,8 @@ export const StoryListItem = (props: Props) => {
     }
 
     function onSwipeUp() {
-        if (props.onClosePress) {
+        debugger;
+        if (props?.shouldCloseOnSwipeUp && props.onClosePress) {
             props.onClosePress(stories[current]);
         }
         if (content[current].onPress) {
@@ -133,12 +144,13 @@ export const StoryListItem = (props: Props) => {
         // check if the next content is not empty
         setLoad(true);
         if (current !== content.length - 1) {
+            const nextIndex = current + 1;
             let data = [...content];
             data[current].finish = 1;
             setContent(data);
-            setCurrent(current + 1);
+            setCurrent(nextIndex);
             progress.setValue(0);
-            props?.onNext && props?.onNext(content?.[current]);
+            props?.onNext && props?.onNext(content?.[nextIndex], nextIndex);
         } else {
             // the next content is empty
             close('next');
@@ -149,12 +161,13 @@ export const StoryListItem = (props: Props) => {
         // checking if the previous content is not empty
         setLoad(true);
         if (current - 1 >= 0) {
+            const previousIndex = current - 1;
             let data = [...content];
             data[current].finish = 0;
             setContent(data);
-            setCurrent(current - 1);
+            setCurrent(previousIndex);
             progress.setValue(0);
-            props?.onPrevious && props?.onPrevious(content?.[current]);
+            props?.onPrevious && props?.onPrevious(content?.[previousIndex], previousIndex);
         } else {
             // the previous content is empty
             close('previous');
@@ -185,16 +198,23 @@ export const StoryListItem = (props: Props) => {
                 backgroundColor: 'black'
             }}
         >
+            {props?.showBlurredBackground && <Image
+                source={{uri: content[current].image}}
+                style={styles.backdrop}
+                resizeMode="cover"
+                blurRadius={30}
+            />}
+            <View style={styles.backgroundContainer}>
+                <Image onLoadEnd={() => start()}
+                        source={{uri: content[current].image}}
+                        resizeMode="auto"
+                        style={[styles.image, { height: currentImageHeight}]}
+                />
+                {load && <View style={styles.spinnerContainer}>
+                    <ActivityIndicator size="large" color={'white'}/>
+                </View>}
+            </View>
             <SafeAreaView>
-                <View style={styles.backgroundContainer}>
-                    <Image onLoadEnd={() => start()}
-                           source={{uri: content[current].image}}
-                           style={styles.image}
-                    />
-                    {load && <View style={styles.spinnerContainer}>
-                        <ActivityIndicator size="large" color={'white'}/>
-                    </View>}
-                </View>
             </SafeAreaView>
             <View style={{flexDirection: 'column', flex: 1,}}>
                 <View style={styles.animationBarContainer}>
@@ -291,17 +311,12 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#000',
     },
-    image: {
-        width: '100%',
-        display: 'flex',
-        aspectRatio: 1,
-    },
     backgroundContainer: {
         position: 'absolute',
         top: 0,
         bottom: 0,
-        left: 0,
-        right: 0,
+        left: 7,
+        right: 7,
         display: 'flex',
         flex: 1,
         height,
@@ -360,5 +375,8 @@ const styles = StyleSheet.create({
         left: 0,
         alignItems: 'center',
         bottom: Platform.OS == 'ios' ? 20 : 50
+    },
+    backdrop: { 
+        ...StyleSheet.absoluteFill,
     }
 });
