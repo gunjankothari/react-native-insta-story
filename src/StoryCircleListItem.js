@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {View, Image, TouchableOpacity, Text, StyleSheet, Platform} from "react-native";
 import {usePrevious} from "./helpers/StateHelpers";
+import LinearGradient from 'react-native-linear-gradient'
 
 import DEFAULT_AVATAR from "./assets/images/no_avatar.png";
 
@@ -38,34 +39,35 @@ const StoryCircleListItem = (props) => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity
-                onPress={() => _handleItemPress(item)}
-                style={[
-                    styles.avatarWrapper,
-                   
-                    !isPressed
-                        ? {
-                            borderColor: unPressedBorderColor
-                                ? unPressedBorderColor
-                                : 'red'
-                        }
-                        : {
-                            borderColor: pressedBorderColor
-                                ? pressedBorderColor
-                                : 'grey'
-                        }
-                ]}
+            <LinearGradient
+                colors={!isPressed ? 
+                    ['#004FFF', '#F7145E'] :
+                    [pressedBorderColor ? pressedBorderColor : 'red']}
+                start={{
+                    x: 0.5,
+                    y: 0
+                }}
+                end={{
+                    x: 0,
+                    y: 1
+                }}
+                style={[styles.avatarWrapper, { alignItems: 'center', justifyContent: 'center'}]}
             >
-                <Image
-                    style={{
-                        height: size,
-                        width: size,
-                        borderRadius: 100,
-                    }}
-                    source={{uri: item.user_image}}
-                    defaultSource={Platform.OS === 'ios' ? DEFAULT_AVATAR : null}
-                />
-            </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => _handleItemPress(item)}
+                    style={{ backgroundColor: '#F3F4F5', borderRadius: 100, height: 75, width: 75, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                >
+                    <Image
+                        style={{
+                            height: size,
+                            width: size,
+                            borderRadius: 100,
+                        }}
+                        source={{uri: item.user_image}}
+                        defaultSource={Platform.OS === 'ios' ? DEFAULT_AVATAR : null}
+                    />
+                </TouchableOpacity>
+            </LinearGradient>
             {showText &&
                 <Text
                     numberOfLines={1}
@@ -88,12 +90,10 @@ const styles = StyleSheet.create({
         marginLeft: 8
     },
     avatarWrapper: {
-        borderWidth: 3,
         padding: 2,
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        borderColor: 'red',
         borderRadius: 100,
         height: 80,
         width: 80

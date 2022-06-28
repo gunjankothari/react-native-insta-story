@@ -376,6 +376,6 @@ const styles = StyleSheet.create({
         bottom: Platform.OS == 'ios' ? 20 : 50
     },
     backdrop: { 
-        ...StyleSheet.absoluteFill,
+        ...StyleSheet.absoluteFill
     }
 });
