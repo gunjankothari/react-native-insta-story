@@ -9,7 +9,6 @@ const StoryCircleListItem = (props) => {
 
     const {
         item,
-        unPressedBorderColor,
         pressedBorderColor,
         avatarSize,
         showText,
@@ -42,7 +41,8 @@ const StoryCircleListItem = (props) => {
             <LinearGradient
                 colors={!isPressed ? 
                     ['#004FFF', '#F7145E'] :
-                    [pressedBorderColor ? pressedBorderColor : 'red']}
+                    pressedBorderColor ? [pressedBorderColor, pressedBorderColor] : ['red', 'red']
+                }
                 start={{
                     x: 0.5,
                     y: 0
