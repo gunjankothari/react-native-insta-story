@@ -86,8 +86,8 @@ export default StoryCircleListItem;
 const styles = StyleSheet.create({
     container: {
         marginVertical: 5,
-        marginRight: 8,
-        marginLeft: 8
+        marginRight: 16,
+        marginLeft: 0
     },
     avatarWrapper: {
         padding: 2,
