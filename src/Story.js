@@ -26,7 +26,8 @@ type Props = {
     showAvatarText?: boolean,
     avatarTextStyle?: TextStyle,
     showBlurredBackground?: boolean,
-    shouldCloseOnSwipeUp?: boolean
+    shouldCloseOnSwipeUp?: boolean,
+    hideModal?: boolean
 };
 
 export const Story = (props: Props) => {
@@ -47,7 +48,8 @@ export const Story = (props: Props) => {
         showAvatarText,
         avatarTextStyle,
         showBlurredBackground,
-        shouldCloseOnSwipeUp = true
+        shouldCloseOnSwipeUp = true,
+        hideModal = false
     } = props;
 
     const [dataState, setDataState] = useState(data);
@@ -181,22 +183,24 @@ export const Story = (props: Props) => {
                     textStyle={avatarTextStyle}
                 />
             </View>
-            <Modal
-                style={{
-                    flex: 1,
-                    height: Dimensions.get("window").height,
-                    width: Dimensions.get("window").width
-                }}
-                isOpen={isModalOpen}
-                onClosed={() => setIsModalOpen(false)}
-                position="center"
-                swipeToClose
-                swipeArea={250}
-                backButtonClose
-                coverScreen={true}
-            >
-                {renderCube()}
-            </Modal>
+            { !hideModal && (
+                <Modal
+                    style={{
+                        flex: 1,
+                        height: Dimensions.get("window").height,
+                        width: Dimensions.get("window").width
+                    }}
+                    isOpen={isModalOpen}
+                    onClosed={() => setIsModalOpen(false)}
+                    position="center"
+                    swipeToClose
+                    swipeArea={250}
+                    backButtonClose
+                    coverScreen={true}
+                >
+                    {renderCube()}
+                </Modal>
+            )}
         </Fragment>
     );
 };
