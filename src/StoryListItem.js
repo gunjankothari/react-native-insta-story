@@ -29,11 +29,13 @@ type Props = {
     onPrevious?: function,
     key: number,
     swipeText?: string,
-    customSwipeUpComponent?: any,
+    customSwipeUpComponent?: () => ReactDOMComponent,
     customCloseComponent?: any,
     stories: IUserStoryItem[],
     showBlurredBackground?: boolean,
-    shouldCloseOnSwipeUp?: boolean
+    shouldCloseOnSwipeUp?: boolean,
+    currentStory?: number,
+    currentPage?: number,
 };
 
 
@@ -43,6 +45,7 @@ export const StoryListItem = (props: Props) => {
     const [load, setLoad] = useState(true);
     const [pressed, setPressed] = useState(false);
     const [currentImageHeight, setCurrentImageHeight] = useState(0);
+    const prevCurrentPage = usePrevious(props.currentPage);
     const [content, setContent] = useState(
         stories.map((x) => {
             return {
@@ -53,25 +56,30 @@ export const StoryListItem = (props: Props) => {
                 finish: 0
             }
         }));
-
-    const [current, setCurrent] = useState(0);
+    const [current, setCurrent] = useState(props.currentStory);
 
     const progress = useRef(new Animated.Value(0)).current;
 
-    const prevCurrentPage = usePrevious(props.currentPage);
+    React.useEffect(() => {
+        if(props?.currentPage === props?.index) {
+            setCurrent(props?.currentStory || 0)
+        }
+    }, [])
 
     React.useEffect(() => {
-        Image.getSize(content[current].image, (width, height) => {
-            setCurrentImageHeight(height);        
-        });
-    }, [content, current])
+        if(content[current]?.image) {
+            Image.getSize(content[current]?.image, (width, height) => {
+                setCurrentImageHeight(height);    
+            });
+        }
+    }, [current])
 
     useEffect(() => {
         let isPrevious = prevCurrentPage > props.currentPage;
         if (isPrevious) {
             setCurrent(content.length - 1);
         } else {
-            setCurrent(0);
+            setCurrent(props.currentStory);
         }
 
         let data = [...content];
@@ -82,7 +90,7 @@ export const StoryListItem = (props: Props) => {
                     x.finish = 0;
                 }
             } else {
-                x.finish = 0;
+                x.finish = current < i ? 0 : 1;
             }
 
         })
@@ -94,9 +102,9 @@ export const StoryListItem = (props: Props) => {
 
     useEffect(() => {
         if (!isNullOrWhitespace(prevCurrent)) {
-            if (current > prevCurrent && content[current - 1].image == content[current].image) {
+            if (current > prevCurrent && content[current - 1]?.image == content[current]?.image) {
                 start();
-            } else if (current < prevCurrent && content[current + 1].image == content[current].image) {
+            } else if (current < prevCurrent && content[current + 1]?.image == content[current]?.image) {
                 start();
             }
         }
@@ -145,7 +153,10 @@ export const StoryListItem = (props: Props) => {
         if (current !== content.length - 1) {
             const nextIndex = current + 1;
             let data = [...content];
-            data[current].finish = 1;
+            
+            if(data[current])
+                data[current].finish = 1;
+            
             setContent(data);
             setCurrent(nextIndex);
             progress.setValue(0);
@@ -187,6 +198,8 @@ export const StoryListItem = (props: Props) => {
 
     const swipeText = content?.[current]?.swipeText || props.swipeText || 'Swipe Up';
 
+    if(!content[current]) { return <></>}
+
     return (
         <GestureRecognizer
             onSwipeUp={(state) => onSwipeUp(state)}
@@ -197,18 +210,18 @@ export const StoryListItem = (props: Props) => {
                 backgroundColor: 'black'
             }}
         >
-            {props?.showBlurredBackground && <Image
-                source={{uri: content[current].image}}
+            {props?.showBlurredBackground && content[current]?.image && <Image
+                source={{ uri: content[current]?.image}}
                 style={styles.backdrop}
                 resizeMode="cover"
                 blurRadius={30}
             />}
             <View style={styles.backgroundContainer}>
-                <Image onLoadEnd={() => start()}
-                        source={{uri: content[current].image}}
-                        resizeMode="auto"
+                { content[current]?.image && (<Image onLoadEnd={() => start()}
+                        source={{ uri: content[current]?.image}}
+                        resizeMode="contain"
                         style={[styles.image, { height: currentImageHeight}]}
-                />
+                />)}
                 {load && <View style={styles.spinnerContainer}>
                     <ActivityIndicator size="large" color={'white'}/>
                 </View>}
@@ -282,12 +295,12 @@ export const StoryListItem = (props: Props) => {
                     </TouchableWithoutFeedback>
                 </View>
             </View>
-            {content[current].onPress &&
+            {content[current]?.onPress &&
                 <TouchableOpacity activeOpacity={1}
                                   onPress={onSwipeUp}
                                   style={styles.swipeUpBtn}>
                     {props.customSwipeUpComponent ?
-                        props.customSwipeUpComponent :
+                        props.customSwipeUpComponent(content[current], current) :
                         <>
                             <Text style={{color: 'white', marginTop: 5}}></Text>
                             <Text style={{color: 'white', marginTop: 5}}>{swipeText}</Text>

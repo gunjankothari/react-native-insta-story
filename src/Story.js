@@ -20,7 +20,7 @@ type Props = {
     onStoryPrevious?: function,
     duration?: number,
     swipeText?: string,
-    customSwipeUpComponent?: any,
+    customSwipeUpComponent?: () => ReactDOMElement,
     customCloseComponent?: any,
     avatarSize?: number,
     showAvatarText?: boolean,
@@ -55,6 +55,7 @@ export const Story = (props: Props) => {
     const [dataState, setDataState] = useState(data);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
+    const [currentStory, setCurrentStory] = useState(0);
     const [selectedData, setSelectedData] = useState([]);
     const cube = useRef();
 
@@ -73,6 +74,7 @@ export const Story = (props: Props) => {
     };
 
     useEffect(() => {
+        setCurrentStory(0);
         handleSeen();
     }, [currentPage]);
 
@@ -103,6 +105,7 @@ export const Story = (props: Props) => {
                     setCurrentPage(0);
                     if (onClose) {
                         onClose(selectedData[selectedData.length - 1]);
+                        setCurrentStory(0);
                     }
                 }
             } else if (state == "previous") {
@@ -125,9 +128,16 @@ export const Story = (props: Props) => {
                                profileImage={x.user_image}
                                stories={x.stories}
                                currentPage={currentPage}
+                               currentStory={currentStory}
                                onFinish={onStoryFinish}
-                               onNext={onStoryNext}
-                               onPrevious={onStoryPrevious}
+                               onNext={(story, index) => {
+                                    setCurrentStory(index)
+                                    onStoryNext(story, index)
+                                }}
+                               onPrevious={(story, index) => {
+                                    setCurrentStory(index)
+                                    onStoryPrevious(story, index)
+                                }}
                                swipeText={swipeText}
                                customSwipeUpComponent={customSwipeUpComponent}
                                customCloseComponent={customCloseComponent}
@@ -137,6 +147,7 @@ export const Story = (props: Props) => {
                                    setIsModalOpen(false);
                                    if (onClose) {
                                        onClose(x);
+                                       setCurrentStory(0);
                                    }
                                }}
                                index={i}/>)
@@ -148,6 +159,7 @@ export const Story = (props: Props) => {
                 <CubeNavigationHorizontal
                     ref={cube}
                     callBackAfterSwipe={(x) => {
+                        setCurrentStory(0);
                         if (x != currentPage) {
                             setCurrentPage(parseInt(x));
                         }
@@ -160,6 +172,7 @@ export const Story = (props: Props) => {
             return (<AndroidCubeEffect
                 ref={cube}
                 callBackAfterSwipe={(x) => {
+                    setCurrentStory(0);
                     if (x != currentPage) {
                         setCurrentPage(parseInt(x));
                     }
@@ -191,7 +204,10 @@ export const Story = (props: Props) => {
                         width: Dimensions.get("window").width
                     }}
                     isOpen={isModalOpen}
-                    onClosed={() => setIsModalOpen(false)}
+                    onClosed={() => {
+                        setIsModalOpen(false);
+                        setCurrentStory(0);
+                    }}
                     position="center"
                     swipeToClose
                     swipeArea={250}
