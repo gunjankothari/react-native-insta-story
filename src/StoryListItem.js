@@ -61,6 +61,19 @@ export const StoryListItem = (props: Props) => {
     const progress = useRef(new Animated.Value(0)).current;
 
     React.useEffect(() => {
+        const updatedContent = stories.map((x) => {
+            return {
+                ...x,
+                image: x.story_image,
+                onPress: x.onPress,
+                swipeText: x.swipeText,
+                finish: 0
+            }
+        });
+        setContent(updatedContent);
+    }, [stories]);
+
+    React.useEffect(() => {
         if(props?.currentPage === props?.index) {
             setCurrent(props?.currentStory || 0)
         }
