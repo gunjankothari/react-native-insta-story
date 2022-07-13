@@ -75,23 +75,8 @@ export const Story = (props: Props) => {
 
     useEffect(() => {
         setCurrentStory(0);
-        handleSeen();
     }, [currentPage]);
 
-    const handleSeen = () => {
-        const seen = selectedData[currentPage];
-        const seenIndex = dataState.indexOf(seen);
-        if (seenIndex > 0) {
-            if (!dataState[seenIndex]?.seen) {
-                let tempData = dataState;
-                dataState[seenIndex] = {
-                    ...dataState[seenIndex],
-                    seen: true
-                }
-                setDataState(tempData);
-            }
-        }
-    }
 
     function onStoryFinish(state) {
         if (!isNullOrWhitespace(state)) {
@@ -108,6 +93,7 @@ export const Story = (props: Props) => {
                         setCurrentStory(0);
                     }
                 }
+                selectedData[currentPage].seen = true;
             } else if (state == "previous") {
                 const newPage = currentPage - 1;
                 if (newPage < 0) {

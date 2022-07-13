@@ -88,26 +88,14 @@ export const StoryListItem = (props: Props) => {
     }, [current])
 
     useEffect(() => {
-        let isPrevious = prevCurrentPage > props.currentPage;
-        if (isPrevious) {
-            setCurrent(content.length - 1);
-        } else {
-            setCurrent(props.currentStory);
-        }
-
+        let current = props?.currentStory || 0;
         let data = [...content];
+        
         data.map((x, i) => {
-            if (isPrevious) {
-                x.finish = 1;
-                if (i == content.length - 1) {
-                    x.finish = 0;
-                }
-            } else {
-                x.finish = current < i ? 0 : 1;
-            }
-
+            x.finish = current < i ? 0 : 1;
         })
-        setContent(data)
+        setCurrent(current);
+        setContent(data);
         start();
     }, [props.currentPage]);
 
@@ -223,18 +211,23 @@ export const StoryListItem = (props: Props) => {
                 backgroundColor: 'black'
             }}
         >
-            {props?.showBlurredBackground && content[current]?.image && <Image
-                source={{ uri: content[current]?.image}}
-                style={styles.backdrop}
-                resizeMode="cover"
-                blurRadius={30}
-            />}
+            {props?.showBlurredBackground && content[current]?.image && (
+                <Image
+                    source={{ uri: content[current]?.image}}
+                    style={styles.backdrop}
+                    resizeMode="cover"
+                    blurRadius={30}
+                />
+            )}
             <View style={styles.backgroundContainer}>
-                { content[current]?.image && (<Image onLoadEnd={() => start()}
-                        source={{ uri: content[current]?.image}}
+                { content[current]?.image && (
+                    <Image 
+                        onLoadEnd={start}
+                        source={{ uri: content[current]?.image }}
                         resizeMode="contain"
                         style={[styles.image, { height: currentImageHeight}]}
-                />)}
+                    />
+                )}
                 {load && <View style={styles.spinnerContainer}>
                     <ActivityIndicator size="large" color={'white'}/>
                 </View>}

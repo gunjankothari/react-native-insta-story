@@ -31,7 +31,6 @@ const StoryCircleListItem = (props) => {
 
         if (handleStoryItemPress) handleStoryItemPress(item);
 
-        setIsPressed(true);
     };
 
     const size = avatarSize ?? 70;
