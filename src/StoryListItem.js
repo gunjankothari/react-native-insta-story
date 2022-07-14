@@ -32,7 +32,7 @@ type Props = {
     customSwipeUpComponent?: () => ReactDOMComponent,
     customCloseComponent?: any,
     stories: IUserStoryItem[],
-    showBlurredBackground?: boolean,
+    showBlurredBackground?: function,
     shouldCloseOnSwipeUp?: boolean,
     currentStory?: number,
     currentPage?: number,
@@ -56,7 +56,7 @@ export const StoryListItem = (props: Props) => {
                 finish: 0
             }
         }));
-    const [current, setCurrent] = useState(props.currentStory);
+    const [current, setCurrent] = useState(props?.lastSeen);
 
     const progress = useRef(new Animated.Value(0)).current;
 
@@ -74,12 +74,6 @@ export const StoryListItem = (props: Props) => {
     }, [stories]);
 
     React.useEffect(() => {
-        if(props?.currentPage === props?.index) {
-            setCurrent(props?.currentStory || 0)
-        }
-    }, [])
-
-    React.useEffect(() => {
         if(content[current]?.image) {
             Image.getSize(content[current]?.image, (width, height) => {
                 setCurrentImageHeight(height);    
@@ -88,7 +82,7 @@ export const StoryListItem = (props: Props) => {
     }, [current])
 
     useEffect(() => {
-        let current = props?.currentStory || 0;
+        let current = props?.lastSeen || 0;
         let data = [...content];
         
         data.map((x, i) => {
@@ -211,17 +205,41 @@ export const StoryListItem = (props: Props) => {
                 backgroundColor: 'black'
             }}
         >
-            {props?.showBlurredBackground && content[current]?.image && (
+            <Image
+                source={{ uri: content[current-2]?.image }}
+                resizeMode="cover"
+                blurRadius={30}
+                style={{ position: 'absolute', height: 0, width: 0 }}
+            /><Image
+                source={{ uri: content[current-1]?.image }}
+                resizeMode="cover"
+                blurRadius={30}
+                style={{ position: 'absolute', height: 0, width: 0 }}
+            />
+            <Image
+                source={{ uri: content[current+1]?.image }}
+                resizeMode="cover"
+                blurRadius={30}
+                style={{ position: 'absolute', height: 0, width: 0 }}
+            />
+            <Image
+                source={{ uri: content[current+2]?.image }}
+                resizeMode="cover"
+                blurRadius={30}
+                style={{ position: 'absolute', height: 0, width: 0 }}
+            />
+            {props?.showBlurredBackground(content[current]) && !!content[current]?.image && (
                 <Image
-                    source={{ uri: content[current]?.image}}
+                    source={{ uri: content[current]?.image }}
                     style={styles.backdrop}
                     resizeMode="cover"
                     blurRadius={30}
                 />
             )}
             <View style={styles.backgroundContainer}>
-                { content[current]?.image && (
+                { !!content[current]?.image && (
                     <Image 
+                        onLoadStart={() => setLoad(true)}
                         onLoadEnd={start}
                         source={{ uri: content[current]?.image }}
                         resizeMode="contain"

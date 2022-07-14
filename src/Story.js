@@ -25,7 +25,7 @@ type Props = {
     avatarSize?: number,
     showAvatarText?: boolean,
     avatarTextStyle?: TextStyle,
-    showBlurredBackground?: boolean,
+    showBlurredBackground?: function,
     shouldCloseOnSwipeUp?: boolean,
     hideModal?: boolean
 };
@@ -77,7 +77,6 @@ export const Story = (props: Props) => {
         setCurrentStory(0);
     }, [currentPage]);
 
-
     function onStoryFinish(state) {
         if (!isNullOrWhitespace(state)) {
             if (state == "next") {
@@ -117,10 +116,14 @@ export const Story = (props: Props) => {
                                currentStory={currentStory}
                                onFinish={onStoryFinish}
                                onNext={(story, index) => {
+                                    console.table(selectedData.map(i => i.lastSeen))
+                                    x.lastSeen = index-1;
                                     setCurrentStory(index)
                                     onStoryNext(story, index)
                                 }}
                                onPrevious={(story, index) => {
+                                    console.table(selectedData.map(i => i.lastSeen))
+                                    x.lastSeen = index+1;
                                     setCurrentStory(index)
                                     onStoryPrevious(story, index)
                                 }}
@@ -129,6 +132,7 @@ export const Story = (props: Props) => {
                                customCloseComponent={customCloseComponent}
                                showBlurredBackground={showBlurredBackground}
                                shouldCloseOnSwipeUp={shouldCloseOnSwipeUp}
+                               lastSeen={x?.lastSeen || 0}
                                onClosePress={() => {
                                    setIsModalOpen(false);
                                    if (onClose) {
