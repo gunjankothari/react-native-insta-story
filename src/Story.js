@@ -16,6 +16,7 @@ type Props = {
     pressedBorderColor?: string,
     onClose?: function,
     onStart?: function,
+    onChange?: function,
     onStoryNext?: function,
     onStoryPrevious?: function,
     duration?: number,
@@ -40,6 +41,7 @@ export const Story = (props: Props) => {
         onClose,
         onStoryNext,
         onStoryPrevious,
+        onChange,
         duration,
         swipeText,
         customSwipeUpComponent,
@@ -79,6 +81,7 @@ export const Story = (props: Props) => {
 
     function onStoryFinish(state) {
         if (!isNullOrWhitespace(state)) {
+            onChange(selectedData[currentPage], currentPage);
             if (state == "next") {
                 const newPage = currentPage + 1;
                 if (newPage < selectedData.length) {
@@ -121,7 +124,7 @@ export const Story = (props: Props) => {
                                     if(currentPage === i) {
                                         x.lastSeen = index-1;
                                     }
-                                    // console.table(selectedData.map(i => i.lastSeen))
+                                    console.table(selectedData.map(i => i.lastSeen))
                                     setCurrentStory(index)
                                     onStoryNext(story, index)
                                 }}
@@ -129,7 +132,7 @@ export const Story = (props: Props) => {
                                     if(currentPage === i) {
                                         x.lastSeen = index;
                                     }
-                                    // console.table(selectedData.map(i => i.lastSeen))
+                                    console.table(selectedData.map(i => i.lastSeen))
                                     setCurrentStory(index)
                                     onStoryPrevious(story, index)
                                 }}
