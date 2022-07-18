@@ -62,12 +62,12 @@ export const Story = (props: Props) => {
     // Component Functions
     const _handleStoryItemPress = async (item, index) => {
         let flag = true;
-        const newData = dataState.slice(index);
+        const newData = dataState;
         if (onStart) {
             flag = await onStart(item)
         }
         if(flag) {
-            setCurrentPage(0);
+            setCurrentPage(index);
             setSelectedData(newData);
             setIsModalOpen(true);
         }
@@ -92,7 +92,9 @@ export const Story = (props: Props) => {
                         setCurrentStory(0);
                     }
                 }
-                selectedData[currentPage].seen = true;
+                if(selectedData[currentPage]){
+                    selectedData[currentPage].seen = true;
+                }
             } else if (state == "previous") {
                 const newPage = currentPage - 1;
                 if (newPage < 0) {
@@ -116,14 +118,18 @@ export const Story = (props: Props) => {
                                currentStory={currentStory}
                                onFinish={onStoryFinish}
                                onNext={(story, index) => {
-                                    console.table(selectedData.map(i => i.lastSeen))
-                                    x.lastSeen = index-1;
+                                    if(currentPage === i) {
+                                        x.lastSeen = index-1;
+                                    }
+                                    // console.table(selectedData.map(i => i.lastSeen))
                                     setCurrentStory(index)
                                     onStoryNext(story, index)
                                 }}
                                onPrevious={(story, index) => {
-                                    console.table(selectedData.map(i => i.lastSeen))
-                                    x.lastSeen = index+1;
+                                    if(currentPage === i) {
+                                        x.lastSeen = index;
+                                    }
+                                    // console.table(selectedData.map(i => i.lastSeen))
                                     setCurrentStory(index)
                                     onStoryPrevious(story, index)
                                 }}
@@ -148,6 +154,7 @@ export const Story = (props: Props) => {
             return (
                 <CubeNavigationHorizontal
                     ref={cube}
+                    currentPage={currentPage}
                     callBackAfterSwipe={(x) => {
                         setCurrentStory(0);
                         if (x != currentPage) {
@@ -161,6 +168,7 @@ export const Story = (props: Props) => {
         } else {
             return (<AndroidCubeEffect
                 ref={cube}
+                currentPage={currentPage}
                 callBackAfterSwipe={(x) => {
                     setCurrentStory(0);
                     if (x != currentPage) {

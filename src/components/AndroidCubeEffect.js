@@ -22,9 +22,13 @@ export default class AndroidCubeEffect extends React.Component {
         this.fullWidth = (this.props.children.length - 1) * width;
 
         this.state = {
-            currentPage: 0,
+            currentPage: props?.currentPage || 0,
             scrollLockPage: this.pages[this.props.scrollLockPage],
         };
+    }
+
+    componentDidMount() {
+        this.scrollTo(this.state.currentPage, false)
     }
 
     UNSAFE_componentWillMount() {

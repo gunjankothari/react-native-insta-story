@@ -321,7 +321,7 @@ export const StoryListItem = (props: Props) => {
             </View>
             {content[current]?.onPress &&
                 <TouchableOpacity activeOpacity={1}
-                                  onPress={onSwipeUp}
+                                //   onPress={onSwipeUp}
                                   style={styles.swipeUpBtn}>
                     {props.customSwipeUpComponent ?
                         props.customSwipeUpComponent(content[current], current) :
