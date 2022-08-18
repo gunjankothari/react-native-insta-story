@@ -1,5 +1,5 @@
 import React, {Fragment, useRef, useState, useEffect} from "react";
-import {Dimensions, View, Platform} from "react-native";
+import {Dimensions, View, Platform, Image, StyleSheet} from "react-native";
 import Modal from "react-native-modalbox";
 import StoryListItem from "./StoryListItem";
 import StoryCircleListView from "./StoryCircleListView";
@@ -112,42 +112,49 @@ export const Story = (props: Props) => {
     }
 
     const renderStoryList = () => selectedData?.map((x, i) => {
-        return (<StoryListItem duration={duration * 1000}
-                               key={i}
-                               profileName={x.user_name}
-                               profileImage={x.user_image}
-                               stories={x.stories}
-                               currentPage={currentPage}
-                               currentStory={currentStory}
-                               onFinish={onStoryFinish}
-                               onNext={(story, index) => {
-                                    if(currentPage === i) {
-                                        x.lastSeen = index;
-                                    }
-                                    setCurrentStory(index)
-                                    onStoryNext(story, index)
-                                }}
-                               onPrevious={(story, index) => {
-                                    if(currentPage === i) {
-                                        x.lastSeen = index;
-                                    }
-                                    setCurrentStory(index)
-                                    onStoryPrevious(story, index)
-                                }}
-                               swipeText={swipeText}
-                               customSwipeUpComponent={customSwipeUpComponent}
-                               customCloseComponent={customCloseComponent}
-                               showBlurredBackground={showBlurredBackground}
-                               shouldCloseOnSwipeUp={shouldCloseOnSwipeUp}
-                               lastSeen={x?.lastSeen || 0}
-                               onClosePress={() => {
-                                   setIsModalOpen(false);
-                                   if (onClose) {
-                                       onClose(x);
-                                       setCurrentStory(0);
-                                   }
-                               }}
-                               index={i}/>)
+        return (
+            <>
+                <StoryListItem 
+                    duration={duration * 1000}
+                    key={i}
+                    currentlyShowing={currentPage === i}
+                    profileName={x.user_name}
+                    profileImage={x.user_image}
+                    stories={x.stories}
+                    currentPage={currentPage}
+                    currentStory={currentStory}
+                    onFinish={onStoryFinish}
+                    onNext={(story, index) => {
+                        if(currentPage === i) {
+                            x.lastSeen = index;
+                        }
+                        setCurrentStory(index)
+                        onStoryNext(story, index)
+                    }}
+                    onPrevious={(story, index) => {
+                        if(currentPage === i) {
+                            x.lastSeen = index;
+                        }
+                        setCurrentStory(index)
+                        onStoryPrevious(story, index)
+                    }}
+                    swipeText={swipeText}
+                    customSwipeUpComponent={customSwipeUpComponent}
+                    customCloseComponent={customCloseComponent}
+                    showBlurredBackground={showBlurredBackground}
+                    shouldCloseOnSwipeUp={shouldCloseOnSwipeUp}
+                    lastSeen={x?.lastSeen || 0}
+                    onClosePress={() => {
+                        setIsModalOpen(false);
+                        if (onClose) {
+                            onClose(x);
+                            setCurrentStory(0);
+                        }
+                    }}
+                    index={i} 
+                />
+            </>
+        )
     })
 
     const renderCube = () => {
