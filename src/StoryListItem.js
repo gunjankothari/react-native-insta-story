@@ -84,6 +84,20 @@ export const StoryListItem = (props: Props) => {
                 setCurrentImageHeight(height);    
             });
         }
+
+        Array.from({length: 4}, (_, i) => i).map(async (index) => {
+            const pointer = index+1;
+            try {
+                if(content[current-pointer]) {
+                    Image.prefetch(content[current-pointer]?.image)
+                }
+                if(content[current+pointer]) {
+                    Image.prefetch(content[current+pointer]?.image)
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        });
     }, [current]);
 
     useEffect(() => {
@@ -158,9 +172,9 @@ export const StoryListItem = (props: Props) => {
             if(props?.currentlyShowing) {
                 props?.onNext && props?.onNext(content?.[current], nextIndex);
             }
-            if(data[current])
-                data[current].finish = 1;            
-
+            if(data[current]){
+                data[current].finish = 1;
+            }
             setContent(data);
             setCurrent(nextIndex);
             progress.setValue(0);
@@ -212,7 +226,7 @@ export const StoryListItem = (props: Props) => {
                 onSwipeUp={(state) => onSwipeUp(state)}
                 onSwipeDown={(state) => onSwipeDown(state)}
                 config={config}
-                style={{ flex: 1 }}>
+                style={{ flex: 1, backgroundColor: 'black'}}>
                 <View style={styles.backgroundContainer}>
                     {content[current]?.backgroundImage}
                     { !!content[current]?.image && (
@@ -260,8 +274,8 @@ export const StoryListItem = (props: Props) => {
                     {load && <View style={styles.spinnerContainer}>
                         <ActivityIndicator size="large" color={'white'}/>
                     </View>}
-                </View>            
-                <View style={{flexDirection: 'column', flex: 1 }}>
+                </View>
+                <View style={{flexDirection: 'column', flex: 1,}}>
                     <View style={styles.animationBarContainer}>
                         {content.map((index, key) => {
                             return (
@@ -326,12 +340,15 @@ const styles = StyleSheet.create({
         flex: 1,
         height,
         justifyContent: 'center',
-        // zIndex: 11111
     },
     spinnerContainer: {
+        zIndex: -100,
         position: "absolute",
         justifyContent: 'center',
-        alignSelf: 'center',        
+        backgroundColor: 'black',
+        alignSelf: 'center',
+        width: width,
+        height: height,
     },
     animationBarContainer: {
         flexDirection: 'row',
@@ -380,9 +397,6 @@ const styles = StyleSheet.create({
         left: 0,
         alignItems: 'center',
         bottom: Platform.OS == 'ios' ? 20 : 50
-    },
-    image: {
-        padding: 3
     },
     backdrop: { 
         ...StyleSheet.absoluteFill
