@@ -112,7 +112,10 @@ export const Story = (props: Props) => {
     }
 
     const renderStoryList = () => selectedData?.map((x, i) => {
-        return (<StoryListItem duration={duration * 1000}
+        return (
+            <>
+                <StoryListItem 
+                    duration={duration * 1000}
                     key={i}
                     currentlyShowing={currentPage === i}
                     profileName={x.user_name}
@@ -123,9 +126,8 @@ export const Story = (props: Props) => {
                     onFinish={onStoryFinish}
                     onNext={(story, index) => {
                         if(currentPage === i) {
-                            x.lastSeen = index-1;
+                            x.lastSeen = index;
                         }
-                        console.table(selectedData.map(i => i.lastSeen))
                         setCurrentStory(index)
                         onStoryNext(story, index)
                     }}
@@ -133,7 +135,6 @@ export const Story = (props: Props) => {
                         if(currentPage === i) {
                             x.lastSeen = index;
                         }
-                        console.table(selectedData.map(i => i.lastSeen))
                         setCurrentStory(index)
                         onStoryPrevious(story, index)
                     }}
@@ -150,9 +151,10 @@ export const Story = (props: Props) => {
                             setCurrentStory(0);
                         }
                     }}
-                    index={i}
+                    index={i} 
                 />
-            )
+            </>
+        )
     })
 
     const renderCube = () => {

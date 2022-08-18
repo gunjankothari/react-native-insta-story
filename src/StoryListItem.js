@@ -85,7 +85,7 @@ export const StoryListItem = (props: Props) => {
             });
         }
 
-        Array.from({length: 2}, (_, i) => i)?.map((index) => {
+        Array.from({length: 5}, (_, i) => i)?.map((index) => {
             const pointer = index+1;
             if(content?.length && content[current-pointer]) {
                 Image.prefetch(content[current-pointer]?.image)
@@ -217,102 +217,100 @@ export const StoryListItem = (props: Props) => {
     if(!content[current]) { return <></>}
 
     return (
-        <SafeAreaView>
-            <GestureRecognizer
-                onSwipeUp={(state) => onSwipeUp(state)}
-                onSwipeDown={(state) => onSwipeDown(state)}
-                config={config}
-                style={{ flex: 1, backgroundColor: 'black'}}>
+        <GestureRecognizer
+            onSwipeUp={(state) => onSwipeUp(state)}
+            onSwipeDown={(state) => onSwipeDown(state)}
+            config={config}
+            style={{ flex: 1, backgroundColor: 'black'}}>
             <View style={styles.backgroundContainer}>
                 {content[current]?.backgroundImage}
+            </View>
+            <SafeAreaView style={{ display: 'flex', flex: 1, height, justifyContent: 'center' }}>
+                <View style={{flexDirection: 'column', zIndex: 9999}}>
+                    <View style={styles.animationBarContainer}>
+                        {content?.map((index, key) => {
+                            return (
+                                <View key={key} style={styles.animationBackground}>
+                                    <Animated.View
+                                        style={{
+                                            flex: current == key ? progress : content[key].finish,
+                                            height: 2,
+                                            backgroundColor: 'white',
+                                        }}
+                                    />
+                                </View>
+                            );
+                        })}
+                    </View>
+                    <View style={styles.userContainer}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Image style={styles.avatarImage}
+                                source={{uri: props.profileImage}}
+                            />
+                            <Text style={styles.avatarText}>{props.profileName}</Text>
+                        </View>
+                        <TouchableOpacity 
+                            onPress={() => {
+                                if (props.onClosePress) {
+                                    props.onClosePress();
+                                }
+                            }}>
+                            <View style={styles.closeIconContainer}>
+                                {props.customCloseComponent ?
+                                    props.customCloseComponent :
+                                    <Image source={CloseIcon} />
+                                }
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
                 { !!content[current]?.image && (
-                    <>
+                    <View style={{ flex: 1, justifyContent: 'center', marginTop: -50, paddingHorizontal: 7}}>
                         <Image
                             onLoadStart={() => setLoad(true)}
                             onLoadEnd={start}
                             source={{ uri: content[current]?.image }}
                             resizeMode="contain"
-                            style={[styles.image, { height: currentImageHeight}]}
+                            style={[styles.image, { height: currentImageHeight }]}
                         />
-                        {props.customSwipeUpComponent && props.customSwipeUpComponent(content[current], current)}
-                    </>
-                )}
-                {load && <View style={styles.spinnerContainer}>
-                    <ActivityIndicator size="large" color={'white'}/>
-                </View>}
-            </View>
-            <SafeAreaView>
-            </SafeAreaView>
-            <View style={{flexDirection: 'column', flex: 1,}}>
-                <View style={styles.animationBarContainer}>
-                    {content?.map((index, key) => {
-                        return (
-                            <View key={key} style={styles.animationBackground}>
-                                <Animated.View
-                                    style={{
-                                        flex: current == key ? progress : content[key].finish,
-                                        height: 2,
-                                        backgroundColor: 'white',
-                                    }}
-                                />
-                            </View>
-                        );
-                    })}
-                </View>
-                <View style={styles.userContainer}>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Image style={styles.avatarImage}
-                            source={{uri: props.profileImage}}
-                        />
-                        <Text style={styles.avatarText}>{props.profileName}</Text>
-                    </View>
-                    <TouchableOpacity 
-                        onPress={() => {
-                            if (props.onClosePress) {
-                                props.onClosePress();
-                            }
-                        }}>
-                        <View style={styles.closeIconContainer}>
-                            {props.customCloseComponent ?
-                                props.customCloseComponent :
-                                <Image source={CloseIcon} />
-                            }
+                        <View style={styles.pressContainer}>
+                            <TouchableWithoutFeedback
+                                onPressIn={() => progress.stopAnimation()}
+                                onLongPress={() => setPressed(true)}
+                                onPressOut={() => {
+                                    setPressed(false);
+                                    startAnimation();
+                                }}
+                                onPress={() => {
+                                    if (!pressed && !load) {
+                                        previous()
+                                    }
+                                }}>
+                                <View style={{flex: 1}}/>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback 
+                                onPressIn={() => progress.stopAnimation()}
+                                onLongPress={() => setPressed(true)}
+                                onPressOut={() => {
+                                    setPressed(false);
+                                    startAnimation();
+                                }}
+                                onPress={() => {
+                                    if (!pressed && !load) {
+                                    next()
+                                    }
+                                }}>
+                                <View style={{flex: 1}}/>
+                            </TouchableWithoutFeedback>
                         </View>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={styles.pressContainer}>
-                <TouchableWithoutFeedback
-                    onPressIn={() => progress.stopAnimation()}
-                    onLongPress={() => setPressed(true)}
-                    onPressOut={() => {
-                        setPressed(false);
-                        startAnimation();
-                    }}
-                    onPress={() => {
-                        if (!pressed && !load) {
-                            previous()
-                        }
-                    }}>
-                    <View style={{flex: 1}}/>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback 
-                    onPressIn={() => progress.stopAnimation()}
-                    onLongPress={() => setPressed(true)}
-                    onPressOut={() => {
-                        setPressed(false);
-                        startAnimation();
-                    }}
-                    onPress={() => {
-                        if (!pressed && !load) {
-                        next()
-                        }
-                    }}>
-                    <View style={{flex: 1}}/>
-                </TouchableWithoutFeedback>
-            </View>
-            </GestureRecognizer>
-        </SafeAreaView>
+                        {props.customSwipeUpComponent && props.customSwipeUpComponent(content[current], current)}
+                    </View>
+                )}
+                {/* {load && <View style={styles.spinnerContainer}>
+                    <ActivityIndicator size="large" color={'white'}/>
+                </View>} */}
+            </SafeAreaView>
+        </GestureRecognizer>
     )
 }
 
@@ -332,8 +330,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         bottom: 0,
-        left: 7,
-        right: 7,
+        left: 0,
+        right: 0,
         display: 'flex',
         flex: 1,
         height,
@@ -385,10 +383,9 @@ const styles = StyleSheet.create({
     },
     pressContainer: {
         ...StyleSheet.absoluteFill,
-        top: 80,
+        top: 40,
         flex: 1,
         flexDirection: 'row',
-        height: height - 50
     },
     swipeUpBtn: {
         position: 'absolute',
