@@ -111,7 +111,7 @@ export const Story = (props: Props) => {
         }
     }
 
-    const renderStoryList = () => selectedData.map((x, i) => {
+    const renderStoryList = () => selectedData?.map((x, i) => {
         return (<StoryListItem duration={duration * 1000}
                     key={i}
                     currentlyShowing={currentPage === i}
